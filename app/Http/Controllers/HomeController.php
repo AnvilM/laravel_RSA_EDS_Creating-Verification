@@ -53,7 +53,7 @@ class HomeController extends Controller
 
 
     /**
-     * Шифрование данных
+     * Создание ЭЦП
      *
      * @param  string $src Исходное сообщение
      * @param  int $key_len Длина ключа
@@ -67,6 +67,9 @@ class HomeController extends Controller
         //Сохранение ключа в сессию.
         Session::put('key', $RSA);
 
+        //Использование хеш функции MD5
+        $RSA = $RSA->withHash('md5');
+
         //Создание подписи.
         $res = $RSA->sign($src);
 
@@ -77,7 +80,7 @@ class HomeController extends Controller
     }
 
     /**
-     * Дешифрование данных
+     * Проверка ЭЦП.
      *
      * @param  string $src Зашифрованное сообщение.
      * @param  string $signature ЭЦП
@@ -93,6 +96,9 @@ class HomeController extends Controller
 
         //Объект класса RSA.
         $RSA = RSA::loadPrivateKey($key);
+
+        //Использование хеш функции MD5
+        $RSA = $RSA->withHash('md5');
 
         //Проверка подписи.
         $res = $RSA->getPublicKey()->verify($src, $signature);
